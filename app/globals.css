@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a1929;
+  --foreground: #f8fafc;
+  --brand: #0a3d29;
+  --brand-dark: #062c1b;
+  --brand-light: #14532d;
+  --gold: #c5a059;
+  --gold-light: #d4af37;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Sarabun', 'Prompt', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-[#c5a059] px-7 py-4 text-base font-bold text-[#062c1b] shadow-lg transition hover:scale-[1.02] hover:bg-[#d4af37];
+  }
+  
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border-2 border-[#c5a059]/60 px-7 py-4 text-base font-semibold text-[#c5a059] transition hover:border-[#c5a059] hover:bg-[#c5a059]/10;
+  }
+  
+  .card-dark {
+    @apply rounded-2xl border border-white/10 bg-[#0d2137] p-6;
+  }
+  
+  .gradient-text {
+    background: linear-gradient(135deg, #c5a059 0%, #d4af37 50%, #e8c878 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
