@@ -7,7 +7,8 @@ export const BRAND = {
 
 export const LINKS = {
   app: "https://hairq-by-geargao.vercel.app",
-  register: "https://hairq-by-geargao.vercel.app/register",
+  register: "/register",
+  login: "/login",
   lineOA: "https://lin.ee/YQxNyz4",
   email: "mister.ken353@gmail.com",
 };
