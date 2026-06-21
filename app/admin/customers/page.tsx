@@ -1,4 +1,28 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+interface Customer {
+  id: string;
+  name: string;
+  phone: string;
+}
+
 export default function CustomersPage() {
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("hairq_token");
+    if (!token) return;
+    fetch("/api/admin/customers", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((d) => { setCustomers(d.customers || []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  if (loading) return <p className="text-slate-400">กำลังโหลด...</p>;
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-white mb-6">ลูกค้า</h1>
@@ -8,27 +32,19 @@ export default function CustomersPage() {
             <tr>
               <th className="text-left px-4 py-3 text-slate-400 font-medium">ชื่อ</th>
               <th className="text-left px-4 py-3 text-slate-400 font-medium">เบอร์โทร</th>
-              <th className="text-left px-4 py-3 text-slate-400 font-medium">ครั้งที่มา</th>
-              <th className="text-left px-4 py-3 text-slate-400 font-medium">ครั้งล่าสุด</th>
-              <th className="text-left px-4 py-3 text-slate-400 font-medium">ยอดรวม</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {[
-              { name: "คุณสมชาย", phone: "081-111-1111", visits: 5, last: "21/06/2026", total: "2,500" },
-              { name: "คุณสมหญิง", phone: "082-222-2222", visits: 3, last: "21/06/2026", total: "4,500" },
-              { name: "คุณสมศรี", phone: "083-333-3333", visits: 8, last: "21/06/2026", total: "3,200" },
-              { name: "คุณสมพร", phone: "084-444-4444", visits: 1, last: "21/06/2026", total: "200" },
-              { name: "คุณสมปอง", phone: "085-555-5555", visits: 12, last: "15/06/2026", total: "8,500" },
-            ].map((c, i) => (
-              <tr key={i} className="hover:bg-white/5 transition cursor-pointer">
-                <td className="px-4 py-3 text-white font-medium">{c.name}</td>
-                <td className="px-4 py-3 text-slate-300">{c.phone}</td>
-                <td className="px-4 py-3 text-slate-300">{c.visits} ครั้ง</td>
-                <td className="px-4 py-3 text-slate-300">{c.last}</td>
-                <td className="px-4 py-3 text-[#c5a059] font-medium">฿{c.total}</td>
-              </tr>
-            ))}
+            {customers.length === 0 ? (
+              <tr><td colSpan={2} className="px-4 py-8 text-center text-slate-400">ยังไม่มีลูกค้า</td></tr>
+            ) : (
+              customers.map((c) => (
+                <tr key={c.id} className="hover:bg-white/5 transition cursor-pointer">
+                  <td className="px-4 py-3 text-white font-medium">{c.name}</td>
+                  <td className="px-4 py-3 text-slate-300">{c.phone}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

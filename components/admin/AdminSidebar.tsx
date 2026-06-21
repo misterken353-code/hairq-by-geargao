@@ -46,7 +46,7 @@ export default function AdminSidebar() {
         })}
       </nav>
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 space-y-1">
         <Link
           href="/"
           className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-400 hover:text-white transition"
@@ -54,6 +54,17 @@ export default function AdminSidebar() {
           <span>←</span>
           <span>กลับไปหน้าเว็บ</span>
         </Link>
+        <button
+          onClick={() => {
+            localStorage.removeItem("hairq_token");
+            localStorage.removeItem("hairq_user");
+            window.location.href = "/login";
+          }}
+          className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-slate-400 hover:text-red-400 transition text-left"
+        >
+          <span>🚪</span>
+          <span>ออกจากระบบ</span>
+        </button>
       </div>
     </aside>
   );

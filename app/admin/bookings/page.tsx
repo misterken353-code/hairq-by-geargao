@@ -1,4 +1,46 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+interface Booking {
+  id: string;
+  customer: { name: string };
+  date: string;
+  time: string;
+  service: { name: string };
+  staff: { name: string } | null;
+  status: string;
+  paid: boolean;
+  price: number;
+}
+
 export default function BookingsPage() {
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("hairq_token");
+    if (!token) return;
+    fetch("/api/admin/bookings", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((d) => { setBookings(d.bookings || []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const statusClass = (status: string) => {
+    switch (status) {
+      case "completed": return "bg-emerald-500/20 text-emerald-400";
+      case "confirmed": return "bg-sky-500/20 text-sky-400";
+      case "cancelled": return "bg-red-500/20 text-red-400";
+      default: return "bg-amber-500/20 text-amber-400";
+    }
+  };
+  const statusLabel: Record<string, string> = {
+    pending: "รอ", confirmed: "ยืนยัน", completed: "เสร็จสิ้น", cancelled: "ยกเลิก",
+  };
+
+  if (loading) return <p className="text-slate-400">กำลังโหลด...</p>;
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-white mb-6">รายการจอง</h1>
@@ -16,31 +58,25 @@ export default function BookingsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {[
-              { name: "คุณสมชาย", date: "21/06/2026", time: "10:00", service: "ตัดผม", staff: "ช่าง A", status: "มาแล้ว", price: "200" },
-              { name: "คุณสมหญิง", date: "21/06/2026", time: "11:00", service: "ทำสี", staff: "ช่าง B", status: "รอ", price: "1,500" },
-              { name: "คุณสมศรี", date: "21/06/2026", time: "13:00", service: "สระ+ไดร์", staff: "ช่าง C", status: "รอ", price: "300" },
-              { name: "คุณสมพร", date: "21/06/2026", time: "14:00", service: "ตัดผม", staff: "ช่าง A", status: "รอ", price: "200" },
-              { name: "คุณสมชาย", date: "22/06/2026", time: "10:00", service: "ทำสี", staff: "ช่าง B", status: "ยืนยัน", price: "1,500" },
-            ].map((b, i) => (
-              <tr key={i} className="hover:bg-white/5 transition">
-                <td className="px-4 py-3 text-white font-medium">{b.name}</td>
-                <td className="px-4 py-3 text-slate-300">{b.date}</td>
-                <td className="px-4 py-3 text-slate-300">{b.time}</td>
-                <td className="px-4 py-3 text-slate-300">{b.service}</td>
-                <td className="px-4 py-3 text-slate-300">{b.staff}</td>
-                <td className="px-4 py-3">
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                    b.status === "มาแล้ว" ? "bg-emerald-500/20 text-emerald-400" :
-                    b.status === "ยืนยัน" ? "bg-blue-500/20 text-blue-400" :
-                    "bg-amber-500/20 text-amber-400"
-                  }`}>
-                    {b.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-[#c5a059] font-medium">฿{b.price}</td>
-              </tr>
-            ))}
+            {bookings.length === 0 ? (
+              <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400">ยังไม่มีการจอง</td></tr>
+            ) : (
+              bookings.map((b) => (
+                <tr key={b.id} className="hover:bg-white/5 transition">
+                  <td className="px-4 py-3 text-white font-medium">{b.customer?.name || "ไม่ระบุ"}</td>
+                  <td className="px-4 py-3 text-slate-300">{new Date(b.date).toLocaleDateString("th-TH")}</td>
+                  <td className="px-4 py-3 text-slate-300">{b.time}</td>
+                  <td className="px-4 py-3 text-slate-300">{b.service?.name || ""}</td>
+                  <td className="px-4 py-3 text-slate-300">{b.staff?.name || "ไม่ระบุ"}</td>
+                  <td className="px-4 py-3">
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusClass(b.status)}`}>
+                      {statusLabel[b.status] || b.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-[#c5a059] font-medium">฿{b.price.toLocaleString()}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

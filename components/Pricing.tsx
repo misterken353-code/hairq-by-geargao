@@ -18,7 +18,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "590",
+    price: "290",
     period: "บาท/เดือน",
     desc: "ที่นิยมที่สุด สำหรับร้านทำผมมืออาชีพ",
     features: [

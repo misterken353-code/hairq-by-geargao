@@ -1,8 +1,52 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+interface Salon {
+  id: string;
+  name: string;
+  slug: string;
+  phone: string;
+  address: string;
+}
+
 export default function SettingsPage() {
+  const [salon, setSalon] = useState<Salon | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("hairq_token");
+    if (!token) return;
+    fetch("/api/admin/dashboard", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.salon) {
+          setSalon({
+            id: d.salon.id,
+            name: d.salon.name,
+            slug: d.salon.slug,
+            phone: "",
+            address: "",
+          });
+        }
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
+  };
+
+  if (loading) return <p className="text-slate-400">กำลังโหลด...</p>;
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-white mb-6">ตั้งค่าร้าน</h1>
-      <div className="max-w-2xl space-y-6">
+      <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         <div className="rounded-2xl border border-white/10 bg-[#0d2137] p-6">
           <h2 className="text-lg font-bold text-white mb-4">ข้อมูลร้าน</h2>
           <div className="space-y-4">
@@ -10,7 +54,7 @@ export default function SettingsPage() {
               <label className="block text-sm font-medium text-slate-300 mb-1">ชื่อร้าน</label>
               <input
                 type="text"
-                defaultValue="ร้านทำผม HairQ"
+                defaultValue={salon?.name || ""}
                 className="w-full rounded-lg bg-[#0a1929] border border-white/10 px-4 py-2.5 text-sm text-white focus:border-[#c5a059] focus:outline-none"
               />
             </div>
@@ -20,7 +64,7 @@ export default function SettingsPage() {
                 <span className="text-sm text-slate-400">hairq-by-geargao.vercel.app/book/</span>
                 <input
                   type="text"
-                  defaultValue="hairq-salon"
+                  defaultValue={salon?.slug || ""}
                   className="flex-1 rounded-lg bg-[#0a1929] border border-white/10 px-4 py-2.5 text-sm text-white focus:border-[#c5a059] focus:outline-none"
                 />
               </div>
@@ -29,14 +73,14 @@ export default function SettingsPage() {
               <label className="block text-sm font-medium text-slate-300 mb-1">เบอร์โทร</label>
               <input
                 type="tel"
-                defaultValue="081-234-5678"
+                defaultValue={salon?.phone || ""}
                 className="w-full rounded-lg bg-[#0a1929] border border-white/10 px-4 py-2.5 text-sm text-white focus:border-[#c5a059] focus:outline-none"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1">ที่อยู่</label>
               <textarea
-                defaultValue="123 ถนนสุขุมวิท กรุงเทพฯ"
+                defaultValue={salon?.address || ""}
                 rows={3}
                 className="w-full rounded-lg bg-[#0a1929] border border-white/10 px-4 py-2.5 text-sm text-white focus:border-[#c5a059] focus:outline-none"
               />
@@ -70,12 +114,18 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        {saved && (
+          <p className="rounded-lg bg-emerald-950/50 px-3 py-2 text-sm text-emerald-300">
+            บันทึกสำเร็จ (ตัวอย่าง)
+          </p>
+        )}
+
         <div className="flex justify-end">
-          <button className="rounded-xl bg-[#c5a059] px-6 py-3 text-sm font-bold text-[#062c1b] hover:bg-[#d4af37] transition">
+          <button type="submit" className="rounded-xl bg-[#c5a059] px-6 py-3 text-sm font-bold text-[#062c1b] hover:bg-[#d4af37] transition">
             บันทึกการตั้งค่า
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
