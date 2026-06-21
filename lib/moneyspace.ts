@@ -147,7 +147,6 @@ export type {
   MoneySpaceConfig,
   CreatePaymentParams,
   MoneySpacePaymentResponse,
-  MoneySpaceClient,
 };
 
 export { MoneySpaceClient };

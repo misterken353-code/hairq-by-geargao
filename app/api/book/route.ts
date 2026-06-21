@@ -12,13 +12,15 @@ export async function POST(req: Request) {
       );
     }
 
+    // หาลูกค้าจากเบอร์โทร "ภายในร้านนี้" เท่านั้น
+    // (ลูกค้าคนเดียวกันที่จองหลายร้าน จะถูกแยกเป็นคนละ record ต่อร้าน)
     let customer = await prisma.customer.findFirst({
-      where: { phone },
+      where: { phone, salonId },
     });
 
     if (!customer) {
       customer = await prisma.customer.create({
-        data: { name, phone },
+        data: { name, phone, salonId },
       });
     }
 

@@ -19,7 +19,7 @@ export async function GET(req: Request) {
       include: {
         salons: {
           include: {
-            staff: { orderBy: { createdAt: "desc" } },
+            staff: { orderBy: { name: "asc" } },
           },
         },
       },

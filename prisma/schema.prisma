@@ -36,11 +36,12 @@ model Salon {
   ownerId String
   owner   User   @relation(fields: [ownerId], references: [id])
 
-  services Service[]
-  bookings Booking[]
-  staff    Staff[]
-  eCards   ECard[]
-  payments Payment[]
+  services  Service[]
+  bookings  Booking[]
+  staff     Staff[]
+  eCards    ECard[]
+  payments  Payment[]
+  customers Customer[]
 }
 
 model Staff {
@@ -78,6 +79,9 @@ model Customer {
   email     String?
   notes     String?
   createdAt DateTime @default(now())
+
+  salonId String
+  salon   Salon  @relation(fields: [salonId], references: [id])
 
   bookings Booking[]
 }
